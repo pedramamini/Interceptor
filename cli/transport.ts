@@ -170,7 +170,9 @@ export function pickTimeoutForAction(action: Action): number {
   if(nativeCaptureDeadline>0)return Math.max(INTERCEPTOR_TIMEOUT_MS,nativeCaptureDeadline+5_000)
   if(action.type==='desktop_type'&&typeof action.secret==='string')return 240_000
   if(action.type==='desktop_authdialog'&&typeof action.secret==='string')return 240_000
-  if(action.type === "desktop_auth")return 180_000
+  // macos auth confirm waits on a person at the Touch ID sensor; at the generic 15s the
+  // prompt outlived the CLI and an owner who touched at second 16 got an empty failure.
+  if(action.type === "desktop_auth" || action.type === "macos_auth")return 180_000
   if (["macos_url_fetch","desktop_url_fetch"].includes(action.type)) {
     const deadline=typeof action.timeoutMs==="number"&&Number.isInteger(action.timeoutMs)&&action.timeoutMs>=100&&action.timeoutMs<=120000?action.timeoutMs:30000
     return Math.max(INTERCEPTOR_TIMEOUT_MS,deadline+5000)

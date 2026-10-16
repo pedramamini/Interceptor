@@ -19,6 +19,7 @@ test('neutral authentication rejects invalid prompts before native initializatio
     expect(desktopAuthActionError({type:'desktop_auth',sub,reason:'a'})).toBeString()
   }
   expect(pickTimeoutForAction(action)).toBe(180000)
+  for(const sub of ['confirm','status','invalidate'])expect(pickTimeoutForAction({type:'macos_auth',sub,reason:'Owned authentication'})).toBe(180000)
 })
 test('neutral auth parser rejects duplicate flags, missing values and extra positionals',()=>{
   for(const values of [[],['unknown'],['status','extra'],['confirm'],['confirm','x','extra'],['confirm','x','--reuse','1.5'],['confirm','x','--policy','any','--policy','any'],['confirm','x','--unknown','a'],['confirm','x','--cancel-title']])expect(()=>parseMacosCommand(['macos','auth',...values],undefined,true)).toThrow()
